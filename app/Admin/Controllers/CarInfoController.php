@@ -3,43 +3,54 @@ namespace App\Admin\Controllers;
 
 use App\Admin\Model\CarInfo;
 use App\Http\Controllers\Controller;
+use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
-use function foo\func;
+use Encore\Admin\Show;
 
 class CarInfoController extends Controller{
+    use HasResourceActions;
+
+    /**
+     * @param Content $content
+     * @return Content
+     */
     public function index(Content $content){
-        return $content->header("车辆信息")->description("列表")
+        return $content->header("车辆信息")
+            ->description("列表")
             ->body($this->grid());
     }
-    public function grid(){
-        $grid = new Grid(new CarInfo());
-        $grid->id('ID')->sortable();
-        $grid->brand('品牌型号');
-        $grid->code('车编号');
-        $grid->carType('车型');
-        $grid->license('车牌号');
-        $grid->status('车辆状态');
-        $grid->inspection_t('年检时间');
-        $grid->created_at(trans('admin.created_at'));
-        $grid->updated_at(trans('admin.updated_at'));
-
-        $grid->actions(function (Grid\Displayers\Actions $actions) {
-            if ($actions->getKey() == 1) {
-                $actions->disableDelete();
-            }
-        });
-
-        $grid->tools(function (Grid\Tools $tools) {
-            $tools->batch(function (Grid\Tools\BatchActions $actions) {
-                $actions->disableDelete();
-            });
-        });
-
-        return $grid;
+    /**
+     * Show interface.
+     *
+     * @param mixed   $id
+     * @param Content $content
+     *
+     * @return Content
+     */
+    public function show($id, Content $content)
+    {
+        return $content
+            ->header('车辆信息')
+            ->description('详情')
+            ->body($this->detail($id));
     }
 
+    /**
+     * Edit interface.
+     *
+     * @param $id
+     *
+     * @return Content
+     */
+    public function edit($id, Content $content)
+    {
+        return $content
+            ->header('车辆信息')
+            ->description('编辑')
+            ->body($this->form()->edit($id));
+    }
     /**
      * @param Content $content
      * @return Content
@@ -52,6 +63,39 @@ class CarInfoController extends Controller{
             ->body($this->form());
     }
 
+    public function grid(){
+        $grid = new Grid(new CarInfo());
+        $grid->id('ID')->sortable();
+        $grid->brand('品牌型号');
+        $grid->code('车编号');
+        $grid->carType('车型');
+        $grid->license('车牌号');
+        $grid->status('车辆状态');
+        $grid->inspection_t('年检时间');
+        $grid->created_at('创建时间');
+        $grid->updated_at('更新时间');
+
+        $grid->actions(function (Grid\Displayers\Actions $actions) {
+            $actions->disableView();
+        });
+
+        $grid->tools(function (Grid\Tools $tools) {
+            $tools->batch(function (Grid\Tools\BatchActions $actions) {
+                $actions->disableDelete();
+            });
+        });
+        $grid->filter(function($filter){
+            // 去掉默认的id过滤器
+            $filter->disableIdFilter();
+            // 在这里添加字段过滤器
+            $filter->like('brand', '品牌型号');
+            $filter->equal('status', '车辆状态');
+            $filter->like('license', '车牌号');
+        });
+
+
+        return $grid;
+    }
     /**
      * @return Form
      */
@@ -64,6 +108,7 @@ class CarInfoController extends Controller{
         $form->text('code', '车编号');
         $form->text('carType', '车型');
         $form->text('license', '车牌号');
+        $form->number('status', '车辆状态')->value(0);
         // 添加日期时间选择框
         $form->datetime('inspection_t', '年检时间');
         $form->tools(function (Form\Tools $tools){
@@ -74,6 +119,28 @@ class CarInfoController extends Controller{
            $footer->disableEditingCheck();
            $footer->disableViewCheck();
         });
+        //$form->ignore(['status']);
         return $form;
+    }
+    /**
+     * Make a show builder.
+     *
+     * @param mixed $id
+     *
+     * @return Show
+     */
+    protected function detail($id)
+    {
+        $car = CarInfo::class;
+        $show = new Show($car::findOrFail($id));
+        $show->id('ID');
+        $show->brand('品牌型号');
+        $show->code( '车编号');
+        $show->carType('车型');
+        $show->license( '车牌号');
+        // 添加日期时间选择框
+        $show->inspection_t('年检时间');
+
+        return $show;
     }
 }
