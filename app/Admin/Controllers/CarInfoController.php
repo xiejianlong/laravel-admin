@@ -1,6 +1,7 @@
 <?php
 namespace App\Admin\Controllers;
 
+use App\Admin\Exceptions\Apply;
 use App\Admin\Model\CarInfo;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
@@ -77,6 +78,7 @@ class CarInfoController extends Controller{
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             $actions->disableView();
+            $actions->append(new Apply($actions->getKey()));
         });
 
         $grid->tools(function (Grid\Tools $tools) {
@@ -133,14 +135,14 @@ class CarInfoController extends Controller{
     {
         $car = CarInfo::class;
         $show = new Show($car::findOrFail($id));
-        $show->id('ID');
-        $show->brand('品牌型号');
-        $show->code( '车编号');
-        $show->carType('车型');
-        $show->license( '车牌号');
-        // 添加日期时间选择框
-        $show->inspection_t('年检时间');
+            $show->id('ID');
+            $show->brand('品牌型号');
+            $show->code( '车编号');
+            $show->carType('车型');
+            $show->license( '车牌号');
+            // 添加日期时间选择框
+            $show->inspection_t('年检时间');
 
-        return $show;
+            return $show;
     }
 }

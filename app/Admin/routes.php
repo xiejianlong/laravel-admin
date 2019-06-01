@@ -12,7 +12,11 @@ Route::group([
 
     $router->get('/', 'HomeController@index')->name('admin.home');
     $router->resource('car','CarInfoController');
-    $router->resource('examine','CarExamineController');
+    //$router->resource('examine','CarExamineController');
 
+    $router->get('/examine/create/{id}','CarExamineController@create');
+    $router->post('/examine/create/{id}','CarExamineController@create');
+
+    $router->get('/examine','CarExamineController@index');
 
 });

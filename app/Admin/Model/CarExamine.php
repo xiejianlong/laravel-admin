@@ -17,4 +17,11 @@ class CarExamine extends Model{
      * @var array
      */
     protected $guarded = ['id','created_at','updated_at'];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function carInfo(){
+        return $this->belongsTo(CarInfo::class);
+    }
 }
