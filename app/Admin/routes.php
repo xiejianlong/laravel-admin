@@ -10,7 +10,7 @@ Route::group([
     'middleware'    => config('admin.route.middleware'),
 ], function (Router $router) {
 
-    //$router->get('/', 'HomeController@index')->name('admin.home');
+    $router->get('/', 'HomeController@index')->name('admin.home');
     $router->resource('car','CarInfoController');
     $router->resource('examine','CarExamineController');
 
