@@ -11,12 +11,20 @@ Route::group([
 ], function (Router $router) {
 
     $router->get('/', 'HomeController@index')->name('admin.home');
-    $router->resource('car','CarInfoController');
-    //$router->resource('examine','CarExamineController');
 
-    $router->get('/examine/create/{id}','CarExamineController@create');
+    $router->resource('car','CarInfoController');
+    $router->resource('examine','CarExamineController');
+
+    $router->get('/apply/do','ApplyController@doApply');
+    $router->post('/apply/create','ApplyController@store');
+
+    $router->get('/test','ApplyController@test');
+
+    /*$router->get('/examine/create/{id}','CarExamineController@create');
+
     $router->post('/examine/create/{id}','CarExamineController@create');
 
-    $router->get('/examine','CarExamineController@index');
+    $router->get('/examine','CarExamineController@index');*/
+
 
 });

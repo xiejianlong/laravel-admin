@@ -3,7 +3,7 @@ namespace App\Admin\Exceptions;
 
 use Encore\Admin\Admin;
 
-class Apply {
+class DoApply {
      protected $id;
 
     public function __construct($id)
@@ -18,10 +18,7 @@ class Apply {
 
     protected function render()
     {
-        //Admin::script($this->script());
-
-        //return "<a class='fa-paper-plane' href='/admin/examine/{$this->id}'></a>";
-        return "<a href='/admin/examine/create?id={$this->id}'>"."<i class='fa fa-paper-plane-o' title='申请车辆'></i>"."</a>";
+        return "<a href='/admin/apply/do?id={$this->id}'>"."<i class='fa fa-paper-plane' title='处理申请'></i>"."</a>";
     }
 
     public function __toString()

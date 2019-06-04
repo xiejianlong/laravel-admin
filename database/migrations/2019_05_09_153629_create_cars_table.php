@@ -21,6 +21,8 @@ class CreateCarsTable extends Migration
             $table->string('license', 190)->unique()->comment("车牌号");
             $table->tinyInteger('status')->default(0)->comment("车辆状态 ");
             $table->dateTime('inspection_t')->comment("年检时间");
+            $table->string('c_name', 50)->comment("创建人");
+            $table->string('e_name', 50)->nullable()->comment("编辑人");
             $table->timestamps();
         });
     }

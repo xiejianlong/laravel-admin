@@ -5,6 +5,7 @@ use App\Admin\Exceptions\Apply;
 use App\Admin\Model\CarInfo;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
@@ -12,7 +13,6 @@ use Encore\Admin\Show;
 
 class CarInfoController extends Controller{
     use HasResourceActions;
-
     /**
      * @param Content $content
      * @return Content
@@ -39,10 +39,8 @@ class CarInfoController extends Controller{
     }
 
     /**
-     * Edit interface.
-     *
      * @param $id
-     *
+     * @param Content $content
      * @return Content
      */
     public function edit($id, Content $content)
@@ -50,7 +48,7 @@ class CarInfoController extends Controller{
         return $content
             ->header('车辆信息')
             ->description('编辑')
-            ->body($this->form()->edit($id));
+            ->body($this->form()->edit($id)->ignore(['c_name']));
     }
     /**
      * @param Content $content
@@ -61,24 +59,46 @@ class CarInfoController extends Controller{
         return $content
             ->header('车辆信息')
             ->description('添加车辆信息')
-            ->body($this->form());
+            ->body($this->form()->ignore(['e_name']));
     }
 
     public function grid(){
         $grid = new Grid(new CarInfo());
+        $grid->model()->orderBy('status');
         $grid->id('ID')->sortable();
         $grid->brand('品牌型号');
         $grid->code('车编号');
         $grid->carType('车型');
         $grid->license('车牌号');
-        $grid->status('车辆状态');
-        $grid->inspection_t('年检时间');
+        $grid->status('车辆状态')->display(function ($status){
+            switch ($status){
+                case 0:
+                    return "<span class='label label-success'>可使用</span>";
+                    break;
+                case 1:
+                    return "<span class='label label-info'>申请中</span>";
+                    break;
+                case 2:
+                    return "<span class='label label-primary'>派车中</span>";
+                    break;
+                default:
+                    return "<span class='label label-success'>可使用</span>";
+
+            }
+        });
+        $grid->inspection_t('年检时间')->display(function ($time){
+            $t_arr = explode(' ',$time);
+
+            return $t_arr[0];
+        });
         $grid->created_at('创建时间');
         $grid->updated_at('更新时间');
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             $actions->disableView();
-            $actions->append(new Apply($actions->getKey()));
+            if($actions->row->status===0){
+                $actions->append(new Apply($actions->getKey()));
+            };
         });
 
         $grid->tools(function (Grid\Tools $tools) {
@@ -106,11 +126,21 @@ class CarInfoController extends Controller{
         // 显示记录id
         $form->display('id', 'ID');
         // 添加text类型的input框
-        $form->text('brand', '品牌型号');
-        $form->text('code', '车编号');
-        $form->text('carType', '车型');
-        $form->text('license', '车牌号');
-        $form->number('status', '车辆状态')->value(0);
+        $form->text('brand', '品牌型号')->rules('required');
+        $form->text('code', '车编号')->rules('required');
+        $form->text('carType', '车型')->rules('required');
+        $form->text('license', '车牌号')
+            ->rules(
+                [
+                    'required',
+                    'regex:'.env('CAR_CODE_PRE'),
+                ],
+                [
+            'regex'=>'车牌号不符合规则'
+        ]);
+        $form->hidden('status')->value(0);
+        $form->hidden('c_name')->value(Admin::user()->username);
+        $form->hidden('e_name')->value(Admin::user()->username);
         // 添加日期时间选择框
         $form->datetime('inspection_t', '年检时间');
         $form->tools(function (Form\Tools $tools){
