@@ -9,6 +9,6 @@ class MessageController extends Controller{
     {
     }
     public function test(){
-        Redis::s
+        Redis::
     }
 }
