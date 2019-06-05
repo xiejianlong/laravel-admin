@@ -36,7 +36,7 @@ class CarInfoService {
                 $model->$k = $v;
             }
         }
-        return $model->update();
+        return $model->save();
     }
 
     /**

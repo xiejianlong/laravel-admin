@@ -47,7 +47,7 @@ class CarExamineController extends Controller
      */
     public function index(Content $content)
     {
-        return $content->header("待审核")->description("列表")->body($this->grid());
+        return $content->header("派车信息")->description("列表")->body($this->grid());
     }
 
     /**
@@ -135,13 +135,13 @@ class CarExamineController extends Controller
         })->modal('操作日志', function ($model) {
             $field = ['e_name', 'status', 'msg', 'created_at'];
             $logModel = ApplyLogs::where('exa_id', $model->id)->orderBy('created_at','desc')->get($field);
-            return new Table(['操作人', '动作', '备注', '操作时间'], $logModel->toArray());
+            return new Table(['操作人', '动作', '备注', '操作时间'], $logModel->toArray(),['primary','info','danger','warning']);
         });
         $grid->name('申请人')->display(function ($userId) {
             $userModel = config('admin.database.users_model')::where('username', $userId)->first();
             return $userModel ? $userModel->name : $userId;
         });
-        $grid->column('msg', '申请备注')->limit(30);
+        $grid->column('msg', '申请备注')->limit(40);
         $grid->e_name('审批人')->display(function ($userId) {
             $userModel = config('admin.database.users_model')::where('username', $userId)->first();
             return $userModel ? $userModel->name : $userId;
@@ -151,8 +151,12 @@ class CarExamineController extends Controller
             $actions->disableDelete();
             $actions->disableEdit();
             $actions->disableView();
-
-            $actions->append(new DoApply($actions->getKey()));
+            if($actions->row->status==1){
+                $actions->append(new DoApply($actions->getKey()));
+            }
+            if($actions->row->status==2&&Admin::user()->username==$actions->row->name){//派车中 需要去归还
+                $actions->append("<a href='/admin/apply/do?id={$actions->row->id}&type=1'>"."<i class='fa fa-mail-reply-all' title='归还车辆'></i>"."</a>");
+            }
         });
 
         $grid->tools(function (Grid\Tools $tools) {

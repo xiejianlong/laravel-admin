@@ -43,7 +43,15 @@ class ApplyController extends Controller{
     }
     public function store(){
         $exa_id = $this->request->input('exa_id');
-        $status = $this->request->input('status')==2?"派车中":"已拒绝";
+        if($this->request->input('status')==2){
+            $status = "派车中";
+        }
+        if($this->request->input('status')==3){
+            $status = "已拒绝";
+        }
+        if($this->request->input('status')==4){
+            $status = "已归还";
+        }
         $msg = $this->request->input('msg');
         $e_name = $this->request->input('e_name');
         $res = $this->applyService->add($exa_id,$status,$msg,$e_name);
@@ -51,14 +59,14 @@ class ApplyController extends Controller{
             //修改对应数据
             $update['status'] = $this->request->input('status');
             $update['e_name'] = Admin::user()->username;
-            $update['e_time'] = Carbon::now()->toDateString();
+            $update['e_time'] = Carbon::now()->toDateTimeString();
             $exa = $this->carExamine->update($exa_id,$update);
             if($exa){
-                $up['status'] = $status==2?2:0;
-                $this->carInfoService->update($exa->id,$up);
+                $up['status'] = $this->request->input('status')==2?2:0;
+                $this->carInfoService->update($exa->car_id,$up);
             }
         }
-        redirect('/admin/examine');
+        return redirect('/admin/examine');
     }
     /**
      * @return Show
@@ -89,11 +97,18 @@ class ApplyController extends Controller{
     protected function form(){
         $form = new Form(new ApplyLogs());
         $form->hidden('exa_id')->value($this->request->input('id'));
-        $form->textarea('msg','审批备注');
-        $directors = [
-            2 => '同意',
-            3 => '拒绝',
-        ];
+        if($this->request->input('type')==1){
+            $directors = [
+                4 => '归还',
+            ];
+            $form->textarea('msg','备注');
+        }else{
+            $directors = [
+                2 => '同意',
+                3 => '拒绝',
+            ];
+            $form->textarea('msg','审批备注');
+        }
         $form->select('status', '操作')->options($directors)->rules(['required']);
         $form->hidden('e_name')->value(Admin::user()->name);
         //顶部按钮

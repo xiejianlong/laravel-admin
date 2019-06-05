@@ -33,6 +33,7 @@ class CarExamineService {
         }
         return $res;
     }
+
     /**
      * @param int $id
      * @param array $update
@@ -45,7 +46,8 @@ class CarExamineService {
                 $model->$k = $v;
             }
         }
-        return $model->update();
+        $model->save();
+        return $model;
     }
 
     /**
