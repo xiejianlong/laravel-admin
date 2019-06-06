@@ -6,7 +6,7 @@
         @endif
     </a>
     <ul class="dropdown-menu">
-        <li class="header">You have {{$messages->count()}} messages</li>
+        <li class="header">您有{{$messages->count()}}条未读消息</li>
         <li>
             <!-- inner menu: contains the actual data -->
             <ul class="menu">
@@ -27,6 +27,6 @@
                 @endforeach
             </ul>
         </li>
-        <li class="footer"><a href="#">See All Messages</a></li>
+        <li class="footer"><a href="#">查看全部消息</a></li>
     </ul>
 </li>

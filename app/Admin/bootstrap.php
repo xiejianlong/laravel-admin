@@ -22,10 +22,10 @@ Encore\Admin\Form::forget(['map', 'editor']);
 
 app('view')->prependNamespace('admin', resource_path('views/Admin'));
 
-/*\Encore\Admin\Facades\Admin::navbar(function(\Encore\Admin\Widgets\Navbar $navbar){
+\Encore\Admin\Facades\Admin::navbar(function(\Encore\Admin\Widgets\Navbar $navbar){
     $navbar->right(new \App\Admin\Exceptions\MessageNavbar());
-});*/
-
-\Encore\Admin\Facades\Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar){
-    $navbar->right(view('Admin/navbar-menu'));
 });
+
+/*\Encore\Admin\Facades\Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar){
+    $navbar->right(view('navbar-menu'));
+});*/
