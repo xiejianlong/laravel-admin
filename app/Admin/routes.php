@@ -12,9 +12,24 @@ Route::group([
 
     $router->get('/', 'HomeController@index')->name('admin.home');
 
-    $router->resource('car','CarInfoController');
-    $router->resource('examine','CarExamineController');
+    //$router->resource('car','CarInfoController');
+    //查看车辆信息
+    $router->get('/car','CarInfoController@index')->name('car.list');
+    //创建车辆信息form
+    $router->get('/car/create','CarInfoController@create')->name('car.create');
+    //创建车辆信息提交数据
+    $router->post('/car','CarInfoController@store')->name('car.create.store');
+    //编辑车辆信息form
+    $router->get('/car/{id}/edit','CarInfoController@edit')->name('car.edit');
+    //编辑车辆信息提交数据
+    $router->put('/car/{id}','CarInfoController@update')->name('car.update');
+    //删除车辆信息
+    $router->delete('/car/{id}','CarInfoController@destroy')->name('car.destroy');
 
+
+    $router->resource('examine','CarExamineController');
+    //申请车辆-form
+    $router->get('/examine/create','CarExamineController@create')->name('caexaminer.create');
     $router->get('/apply/do','ApplyController@doApply');
     $router->post('/apply/create','ApplyController@store');
 

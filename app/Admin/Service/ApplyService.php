@@ -2,20 +2,23 @@
 namespace App\Admin\Service;
 
 use App\Admin\Model\ApplyLogs;
+use Illuminate\Support\Facades\Notification;
 
 class ApplyService {
     /**
      * @var ApplyLogs
      */
     protected  $logs;
+    protected  $notification;
 
     /**
      * ApplyService constructor.
      * @param ApplyLogs $logs
      */
-    public function __construct(ApplyLogs $logs)
+    public function __construct(ApplyLogs $logs,Notification $notification)
     {
         $this->logs = $logs;
+        $this->notification = $notification;
     }
 
     /**
@@ -30,7 +33,11 @@ class ApplyService {
         $this->logs->status = $status;
         $this->logs->msg = $msg;
         $this->logs->e_name = $e_name;
-        return $this->logs->save();
+        $res= $this->logs->save();
+        if($res){
+            $this->notification::send();
+        }
+        return $res;
     }
 
     /**

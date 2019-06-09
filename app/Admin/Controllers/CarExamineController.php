@@ -151,7 +151,7 @@ class CarExamineController extends Controller
             $actions->disableDelete();
             $actions->disableEdit();
             $actions->disableView();
-            if($actions->row->status==1){
+            if($actions->row->status==1&&Admin::user()->can('')){//处理申请派车//需要有权限的用户
                 $actions->append(new DoApply($actions->getKey()));
             }
             if($actions->row->status==2&&Admin::user()->username==$actions->row->name){//派车中 需要去归还
