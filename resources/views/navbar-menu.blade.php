@@ -13,7 +13,7 @@
 
                 @foreach($messages as $message)
                     <li><!-- start message -->
-                        <a href="#">
+                        <a id="redMsg" href="/admin/msg?type=inbox">
                             <div class="pull-left">
                                 <img src="{{$message->sender->avatar}}" class="img-circle" alt="User Image">
                             </div>

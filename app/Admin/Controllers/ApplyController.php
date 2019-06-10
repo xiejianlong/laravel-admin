@@ -4,6 +4,7 @@ use App\Admin\Model\ApplyLogs;
 use App\Admin\Service\ApplyService;
 use App\Admin\Service\CarExamineService;
 use App\Admin\Service\CarInfoService;
+use App\Admin\Service\MessageService;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Encore\Admin\Facades\Admin;
@@ -19,12 +20,14 @@ class ApplyController extends Controller{
     protected $request;
     protected $carExamine;
     protected $carInfoService;
-    public function __construct(ApplyService $applyService,Request $request,CarExamineService $carExamine,CarInfoService $carInfoService)
+    protected $messageService;
+    public function __construct(ApplyService $applyService,MessageService $messageService,Request $request,CarExamineService $carExamine,CarInfoService $carInfoService)
     {
         $this->applyService = $applyService;
         $this->request = $request;
         $this->carExamine = $carExamine;
         $this->carInfoService = $carInfoService;
+        $this->messageService = $messageService;
     }
 
     public function test(){
@@ -64,6 +67,18 @@ class ApplyController extends Controller{
             if($exa){
                 $up['status'] = $this->request->input('status')==2?2:0;
                 $this->carInfoService->update($exa->car_id,$up);
+                //添加申请派车消息提醒
+                $userModel = config('admin.database.users_model')::where('username', $exa->name)->first();
+                if($this->request->input('status')==2){
+                    $re = '通过了';
+                    $msg = Admin::user()->name.$re.'您的派车申请';
+                    $this->messageService->add(Admin::user()->id,$userModel->id,'派车单处理通知',$msg);
+                }
+                if($this->request->input('status')==3){
+                    $re = '拒绝了';
+                    $msg = Admin::user()->name.$re.'您的派车申请';
+                    $this->messageService->add(Admin::user()->id,$userModel->id,'派车单处理通知',$msg);
+                }
             }
         }
         return redirect('/admin/examine');

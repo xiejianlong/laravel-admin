@@ -10,7 +10,7 @@ Route::group([
     'middleware'    => config('admin.route.middleware'),
 ], function (Router $router) {
 
-    $router->get('/', 'HomeController@index')->name('admin.home');
+    $router->get('/', 'CarInfoController@index')->name('car.list');
 
     //$router->resource('car','CarInfoController');
     //查看车辆信息
@@ -26,20 +26,19 @@ Route::group([
     //删除车辆信息
     $router->delete('/car/{id}','CarInfoController@destroy')->name('car.destroy');
 
-
-    $router->resource('examine','CarExamineController');
     //申请车辆-form
-    $router->get('/examine/create','CarExamineController@create')->name('caexaminer.create');
-    $router->get('/apply/do','ApplyController@doApply');
+    $router->get('/examine/create','CarExamineController@create')->name('examiner.create');
+    //提交申请
+    $router->post('/examine','CarExamineController@store')->name('examiner.create.store');
+    //申请列表
+    $router->get('/examine','CarExamineController@index')->name('examiner.index');
+    //处理申请页面
+    $router->get('/apply/do','ApplyController@doApply')->name('apply.do');
+    //处理申请结果提交
     $router->post('/apply/create','ApplyController@store');
 
-    $router->get('/test','ApplyController@test');
+    $router->get('/msg','MessageController@index')->name('msg.list');
 
-    /*$router->get('/examine/create/{id}','CarExamineController@create');
-
-    $router->post('/examine/create/{id}','CarExamineController@create');
-
-    $router->get('/examine','CarExamineController@index');*/
-
+    $router->get('/msg/test','MessageController@test');
 
 });

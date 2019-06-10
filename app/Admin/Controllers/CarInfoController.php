@@ -115,7 +115,8 @@ class CarInfoController extends Controller{
             $filter->like('license', '车牌号');
         });
 
-
+        $grid->disableExport();
+        $grid->disableRowSelector();
         return $grid;
     }
     /**

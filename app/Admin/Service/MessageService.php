@@ -28,15 +28,13 @@ class MessageService{
      * @param string $to
      * @param string $title
      * @param string $message
-     * @param string $read_at
      * @return bool
      */
-    public function add(int $from,string $to,string $title,string $message,string $read_at){
+    public function add(int $from,string $to,string $title,string $message){
         $this->model->from = $from;
         $this->model->to = $to;
         $this->model->title = $title;
         $this->model->message = $message;
-        $this->model->read_at = $read_at;
         return $this->model->save();
     }
 

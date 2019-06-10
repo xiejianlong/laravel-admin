@@ -6,6 +6,7 @@ use App\Admin\Exceptions\DoApply;
 use App\Admin\Model\ApplyLogs;
 use App\Admin\Model\CarExamine;
 use App\Admin\Model\CarInfo;
+use App\Admin\Service\MessageService;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\HasResourceActions;
@@ -18,6 +19,7 @@ use Encore\Admin\Layout\Row;
 use Encore\Admin\Show;
 use Encore\Admin\Widgets\Table;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class CarExamineController extends Controller
 {
@@ -29,14 +31,16 @@ class CarExamineController extends Controller
     protected $logs;
     protected $userModel;
     protected $user;
+    protected $messageService;
 
-    public function __construct(Request $request, CarInfo $carInfo, CarExamine $carExamine, ApplyLogs $logs, Administrator $userModel)
+    public function __construct(Request $request, CarInfo $carInfo,MessageService $messageService, CarExamine $carExamine, ApplyLogs $logs, Administrator $userModel)
     {
         $this->request = $request;
         $this->carModel = $carInfo;
         $this->carExamine = $carExamine;
         $this->logs = $logs;
         $this->userModel = $userModel;
+        $this->messageService = $messageService;
         $this->user = Admin::user();
     }
 
@@ -58,12 +62,16 @@ class CarExamineController extends Controller
     public function create(Content $content)
     {
         $this->carInfo = $this->carModel->findOrFail($this->request->input('id'));
-        return $content->header('申请派车')->description('填写申请单')->row(function (Row $row) {
-            $row->column(4, function (Column $column) {
-                $column->row($this->showCarInfo());
+        if($this->carInfo->status==0){
+            return $content->header('申请派车')->description('填写申请单')->row(function (Row $row) {
+                $row->column(4, function (Column $column) {
+                    $column->row($this->showCarInfo());
+                });
+                $row->column(8, $this->form());
             });
-            $row->column(8, $this->form());
-        });
+        }else{
+            return redirect('/admin/car');
+        }
     }
 
     /**
@@ -93,6 +101,10 @@ class CarExamineController extends Controller
             $logModel->status = "申请派车";
             $logModel->msg = $request->input('msg');
             $logModel->save();
+
+            //添加申请派车消息提醒
+            $msg = $user->name.'申请派车【'.$examine->brand.'】车牌号：'.$examine->license.'请前往【车辆管理->审核调度】处理';
+            $this->messageService->add($user->id,'0','申请派车-待审核',$msg);
         }
         redirect('/admin/examine');;
     }
@@ -104,7 +116,11 @@ class CarExamineController extends Controller
     {
         $user = Admin::user();
         $grid = new Grid($this->carExamine);
-        $grid->model()->where('name', $user->username);
+        //判断权限（如果该用户权限可以操作申请的派车单）
+        if($user->can('examiner.create')){
+        }else{
+            $grid->model()->where('name', $user->username);
+        }
         $grid->model()->where('status', '>', '0');
         $grid->model()->orderBy('status');
         $grid->id('ID')->sortable();
@@ -127,7 +143,7 @@ class CarExamineController extends Controller
                     return "<span class='label label-warning'>已拒绝</span>";
                     break;
                 case 4:
-                    return "<span class='label label-primary'>已归还</span>";
+                    return "<span class='label label-default'>已归还</span>";
                     break;
                 default:
                     return "<span class='label label-info'>申请中</span>";
@@ -151,7 +167,7 @@ class CarExamineController extends Controller
             $actions->disableDelete();
             $actions->disableEdit();
             $actions->disableView();
-            if($actions->row->status==1&&Admin::user()->can('')){//处理申请派车//需要有权限的用户
+            if($actions->row->status==1&&Admin::user()->can('apply.do')){//处理申请派车//需要有权限的用户
                 $actions->append(new DoApply($actions->getKey()));
             }
             if($actions->row->status==2&&Admin::user()->username==$actions->row->name){//派车中 需要去归还
@@ -173,6 +189,8 @@ class CarExamineController extends Controller
             $filter->like('license', '车牌号');
         });
         $grid->disableCreateButton();
+        $grid->disableExport();
+        $grid->disableRowSelector();
         return $grid;
     }
 

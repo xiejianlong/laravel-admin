@@ -34,9 +34,6 @@ class ApplyService {
         $this->logs->msg = $msg;
         $this->logs->e_name = $e_name;
         $res= $this->logs->save();
-        if($res){
-            $this->notification::send();
-        }
         return $res;
     }
 

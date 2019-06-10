@@ -18,6 +18,7 @@ class DoApply {
 
     protected function render()
     {
+
         return "<a href='/admin/apply/do?id={$this->id}'>"."<i class='fa fa-paper-plane' title='处理申请'></i>"."</a>";
     }
 
