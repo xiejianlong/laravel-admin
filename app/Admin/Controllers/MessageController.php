@@ -31,6 +31,9 @@ class MessageController extends Controller{
             if(Admin::user()->can('apply.do') &&$type=='inbox'){
                 $grid->model()->orWhere('to',0);
             }
+            if(Admin::user()->can('car.edit') &&$type=='inbox'){
+                $grid->model()->orWhere('to',0);
+            }
             $grid->id('ID')->sortable();
 
             if($type=='inbox'){

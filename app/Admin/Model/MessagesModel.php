@@ -40,7 +40,7 @@ class MessagesModel extends Model
     {
         return $query->whereNull('read_at');
     }
-    public static function boot()
+    /*public static function boot()
     {
         parent::boot();
         static::creating(function ($model) {
@@ -54,5 +54,5 @@ class MessagesModel extends Model
                 return false;
             }
         });
-    }
+    }*/
 }
