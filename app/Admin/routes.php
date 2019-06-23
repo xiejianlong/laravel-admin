@@ -39,6 +39,6 @@ Route::group([
 
     $router->get('/msg','MessageController@index')->name('msg.list');
 
-    $router->get('/msg/test','MessageController@test');
+    $router->get('/msg/get','MessageController@getMsg');
 
 });

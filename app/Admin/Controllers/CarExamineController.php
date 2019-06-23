@@ -206,7 +206,19 @@ class CarExamineController extends Controller
         $form->hidden('license')->value($this->carInfo->license);
         $form->hidden('name')->value(Admin::user()->username);
         // 添加text类型的input框
-        $form->textarea('msg', '申请备注')->rules('nullable')->placeholder('请填写申请备注');
+        $form->row(function ($row){
+            $row->with(4)->text('applyName','申请人')->rules('required');
+            $row->with(4)->datetime('useTime','用车时间')->rules('required');
+            $row->with(4)->textarea('reason', '用车事由')->rules('nullable')->placeholder('请填写用车事由')->setWidth(3,1);
+            $row->with(4)->textarea('route', '行车路线')->rules('nullable')->placeholder('请填写行车路线')->setWidth(4,1);
+        //$form->table('pcd','派车单','11');
+        });
+//        $form->textarea('msg', '申请备注')->rules('nullable')->placeholder('请填写申请备注');
+//        $form->text('applyName','申请人')->rules('required');
+//        $form->datetime('useTime','用车时间')->rules('required');
+//        $form->textarea('reason', '用车事由')->rules('nullable')->placeholder('请填写用车事由')->setWidth(3,1);
+//        $form->textarea('route', '行车路线')->rules('nullable')->placeholder('请填写行车路线')->setWidth(4,1);
+        //$form->table('pcd','派车单','11');
         //顶部按钮
         $form->tools(function (Form\Tools $tools) {
             $tools->disableView();

@@ -1,4 +1,4 @@
-<li class="dropdown messages-menu">
+<li class="dropdown messages-menu" id="navbar-msg">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
         <i class="fa fa-envelope-o"></i>
         @if($messages->count() > 0)

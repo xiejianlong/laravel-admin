@@ -172,5 +172,18 @@ SCRIPT;
 </div>
 MODAL;
     }
-
+    public function getMsg(){
+        $query = MessagesModel::with('sender')->inbox()->unread();
+       if( Admin::user()->can('apply.do')){
+           $query=  $query->orWhere('to',0);
+       };
+       if( Admin::user()->can('car.edit')){
+           $query=  $query->orWhere('to',0);
+       };
+        $messages = $query->get();
+        foreach ( $messages as $k=>$v){
+            $v->created_at = $v->created_at->diffForHumans();
+        }
+        return $messages;
+    }
 }
