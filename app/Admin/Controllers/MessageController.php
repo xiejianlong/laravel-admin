@@ -123,9 +123,7 @@ $('#messageModal').on('show.bs.modal', function (event) {
     $.ajax({
         method: 'put',
         url: '/{$path}/' + button.data('id'),
-        data: {
-            _token:LA.token,
-        }
+       
     });
 
 }).on('hide.bs.modal', function (event) {
@@ -175,15 +173,24 @@ MODAL;
     public function getMsg(){
         $query = MessagesModel::with('sender')->inbox()->unread();
        if( Admin::user()->can('apply.do')){
-           $query=  $query->orWhere('to',0);
+           $query=  $query->orWhere('to',0)->whereNull('read_at');
        };
        if( Admin::user()->can('car.edit')){
-           $query=  $query->orWhere('to',0);
+           $query=  $query->orWhere('to',0)->whereNull('read_at');
        };
         $messages = $query->get();
+        $res = [];
         foreach ( $messages as $k=>$v){
-            $v->created_at = $v->created_at->diffForHumans();
+            $data = $v->toArray();
+            $data['created_at'] = $v->created_at->diffForHumans();
+            if(isset($v->sender->avatar)){
+                $data['sender']['avatar'] = ($v->sender->avatar).'?_token='.request()->get('_token');
+            }
+            $data['created_at'] = $v->created_at->diffForHumans();
+            $res[] = $data;
+            
         }
-        return $messages;
+        //return urlencode('http://car.admin.com/storage/images/c9fe71d5795147fa5ea74ef7b095c160.jpg');
+        return $res;
     }
 }

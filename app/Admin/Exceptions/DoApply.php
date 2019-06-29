@@ -5,10 +5,12 @@ use Encore\Admin\Admin;
 
 class DoApply {
      protected $id;
+     protected $status;
 
-    public function __construct($id)
+    public function __construct($id,$status)
     {
         $this->id = $id;
+        $this->status = $status;
     }
 
     protected function script()
@@ -19,7 +21,7 @@ class DoApply {
     protected function render()
     {
 
-        return "<a href='/admin/apply/do?id={$this->id}'>"."<i class='fa fa-paper-plane' title='处理申请'></i>"."</a>";
+        return "<a href='/admin/apply/do/{$this->status}?id={$this->id}&status={$this->status}'>"."<i class='fa fa-paper-plane' title='处理申请'></i>"."</a>";
     }
 
     public function __toString()

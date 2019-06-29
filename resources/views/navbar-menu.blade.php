@@ -30,3 +30,42 @@
         <li class="footer"><a href="#">查看全部消息</a></li>
     </ul>
 </li>
+<script>
+    $(function () {
+        getMsg()
+    });
+    function getMsg(){
+        setTimeout(getMsg,5*1000);
+        $.ajax({
+            method: 'get',
+            url: "http://car.admin.com/admin/msg/get",
+            data: {
+                _token:LA.token,
+            },
+            success: function (data) {
+                if(data){
+                    $('#navbar-msg').html();
+                    loadMsg(data);
+                }
+            }
+        });
+    }
+    function loadMsg(data){
+        var html = '<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-envelope-o"></i>';
+        if(data.length>0){
+            html += '<span class="label label-success">'+data.length+'</span>';
+        }
+        html+='</a>';
+        html+='<ul class="dropdown-menu">';
+        html+='<li class="header">您有'+data.length+'条未读消息</li>';
+        html+='<li><ul class="menu">';
+        for(var i = 0 ;i<data.length;i++ ){
+            html+='<li><a id="redMsg" href="/admin/msg?type=inbox"><div class="pull-left">';
+            html+='<img src="'+data[i].sender.avatar+'" class="img-circle" alt="User Image"></div>';
+            html+='<h4>'+data[i].title+'<small><i class="fa fa-clock-o"></i>'+data[i].created_at+'</small> </h4>';
+            html+='<p>'+data[i].message.substr(0,30)+'</p></a></li>';
+        }
+        html+='</ul></li><li class="footer"><a href="#">查看全部消息</a></li></ul>';
+        $('#navbar-msg').html(html);
+    }
+</script>

@@ -28,6 +28,19 @@ class MessagesModel extends Model
     {
         return $this->belongsTo(Administrator::class, 'to');
     }
+    
+    public function inbox(){
+        $this->where('to', Admin::user()->id);
+        return $this;
+    }
+    public function outbox(){
+        $this->where('from', Admin::user()->id);
+        return $this;
+    }
+    public function unread(){
+        $this->whereNull('read_at');
+        return $this;
+    }
     public function scopeInbox($query)
     {
         return $query->where('to', Admin::user()->id);

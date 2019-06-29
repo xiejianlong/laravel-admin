@@ -33,9 +33,11 @@ Route::group([
     //申请列表
     $router->get('/examine','CarExamineController@index')->name('examiner.index');
     //处理申请页面
-    $router->get('/apply/do','ApplyController@doApply')->name('apply.do');
+    $router->get('/apply/do/1','ApplyController@doApply')->name('apply.do');
+    $router->get('/apply/do/2','ApplyController@doApply')->name('apply.do1');
+    $router->get('/apply/do/3','ApplyController@doApply')->name('apply.do2');
     //处理申请结果提交
-    $router->post('/apply/create','ApplyController@store');
+    $router->post('/apply/do/create','ApplyController@store')->name('apply.create');
 
     $router->get('/msg','MessageController@index')->name('msg.list');
 
