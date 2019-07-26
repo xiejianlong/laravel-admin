@@ -2,6 +2,7 @@
 namespace App\Admin\Controllers;
 
 use App\Admin\Exceptions\Apply;
+use App\Admin\Exceptions\CarExcelExporter;
 use App\Admin\Model\CarInfo;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
@@ -64,6 +65,7 @@ class CarInfoController extends Controller{
 
     public function grid(){
         $grid = new Grid(new CarInfo());
+        $grid->model()->where('status','<',3);
         $grid->model()->orderBy('status');
         $grid->id('ID')->sortable();
         $grid->brand('品牌型号');
@@ -114,8 +116,9 @@ class CarInfoController extends Controller{
             $filter->equal('status', '车辆状态');
             $filter->like('license', '车牌号');
         });
-
-        $grid->disableExport();
+        ob_end_clean();
+        ob_start();
+        $grid->exporter(new CarExcelExporter());
         $grid->disableRowSelector();
         return $grid;
     }

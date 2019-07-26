@@ -241,7 +241,7 @@ class CarExamineController extends Controller
                                                    ->can('apply.do2')) {//处理申请派车//需要有权限的用户
                 $actions->append(new DoApply($actions->getKey(),$actions->row->status));
             }
-            if ($actions->row->status == 5 && Admin::user()->username == $actions->row->name) {//派车中 需要去归还
+            if ($actions->row->status == 5 && Admin::user()->username == $actions->row->e_name) {//派车中 需要去归还
                 $actions->append("<a href='/admin/apply/do?id={$actions->row->id}&type=1'>" . "<i class='fa fa-mail-reply-all' title='归还车辆'></i>" . "</a>");
             }
         });
@@ -261,7 +261,7 @@ class CarExamineController extends Controller
             $filter->like('license', '车牌号');
         });
         $grid->disableCreateButton();
-        $grid->disableExport();
+        //$grid->disableExport();
         $grid->disableRowSelector();
         
         return $grid;
