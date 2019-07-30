@@ -2,6 +2,7 @@
 namespace App\Admin\Controllers;
 
 use App\Admin\Exceptions\Apply;
+use App\Admin\Exceptions\BadDelete;
 use App\Admin\Exceptions\CarExcelExporter;
 use App\Admin\Model\CarInfo;
 use App\Http\Controllers\Controller;
@@ -98,6 +99,8 @@ class CarInfoController extends Controller{
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             $actions->disableView();
+            $actions->disableDelete();
+            $actions->append(new BadDelete($actions->getKey()));
             if($actions->row->status===0){
                 $actions->append(new Apply($actions->getKey()));
             };
@@ -116,8 +119,6 @@ class CarInfoController extends Controller{
             $filter->equal('status', '车辆状态');
             $filter->like('license', '车牌号');
         });
-        ob_end_clean();
-        ob_start();
         $grid->exporter(new CarExcelExporter());
         $grid->disableRowSelector();
         return $grid;
@@ -178,5 +179,21 @@ class CarInfoController extends Controller{
             $show->inspection_t('年检时间');
 
             return $show;
+    }
+    
+    /**
+     * @param $id
+     *
+     * @return bool
+     */
+    public function destroy($id)
+    {
+        $car = CarInfo::findOrFail($id);
+        if($car){
+            $car->status = 3;
+        }
+        $car->save();
+        
+        return $car;
     }
 }

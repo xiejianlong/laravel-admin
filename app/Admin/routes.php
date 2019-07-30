@@ -15,6 +15,10 @@ Route::group([
     //$router->resource('car','CarInfoController');
     //查看车辆信息
     $router->get('/car','CarInfoController@index')->name('car.list');
+    //报废的车辆信息
+    $router->get('/badcar','BadCarInfoController@index')->name('badcar.list');
+    //报废的车辆信息
+    $router->delete('/badcar/{id}','BadCarInfoController@destroy')->name('badcar.destroy');
     //创建车辆信息form
     $router->get('/car/create','CarInfoController@create')->name('car.create');
     //创建车辆信息提交数据
