@@ -3,11 +3,11 @@
 namespace App\Admin\Exceptions;
 
 use Encore\Admin\Grid\Exporters\ExcelExporter;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BadCarExcelExporter extends ExcelExporter
 {
     protected $fileName = '报销车辆信息列表.xlsx';
-    
     protected $columns = [
         'id'           => 'ID',
         'Brand'        => '品牌型号',
@@ -20,18 +20,4 @@ class BadCarExcelExporter extends ExcelExporter
         'Created_at'   => '创建时间',
         'Updated_at'   => '更新时间',
     ];
-    
-    public function query()
-    {
-        $data = $this->getQuery()->get();
-        //$data =  parent::query()->get();
-        if($data){
-            foreach ($data as $k=>$v){
-                if($v->getAttribute('status')==3){
-                    $v->setAttribute('status','已报销');
-                }
-            }
-        }
-        return $data;
-    }
 }
