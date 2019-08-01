@@ -3,7 +3,6 @@
 namespace App\Admin\Exceptions;
 
 use Encore\Admin\Grid\Exporters\ExcelExporter;
-use Maatwebsite\Excel\Facades\Excel;
 
 class BadCarExcelExporter extends ExcelExporter
 {
